@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sfa_claim/claim_request/claim_request_screen.dart';
 
+import 'claim_history/claim_history.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -18,7 +20,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const ClaimRequest(),
+      home: const ClaimHistory(),
     );
   }
 }
