@@ -9,6 +9,7 @@ import 'package:sfa_claim/components/custom_button.dart';
 import 'package:sfa_claim/components/custom_claim_dialog.dart';
 import 'package:sfa_claim/components/custom_text.dart';
 import 'package:sfa_claim/components/custom_text_form_field.dart';
+import 'package:sfa_claim/controller/claim_controller.dart';
 
 import '../components/customIcon_button.dart';
 
@@ -88,6 +89,7 @@ class _ClaimRequestState extends State<ClaimRequest> {
   @override
   void initState() {
     selectedVisitNo = '';
+    
     super.initState();
   }
 
@@ -547,7 +549,7 @@ class _ClaimRequestState extends State<ClaimRequest> {
                     const SizedBox(height: 10),
                   ],
                 ),
-              ),  
+              ),
             ),
             const SizedBox(height: 10),
             ListView.builder(

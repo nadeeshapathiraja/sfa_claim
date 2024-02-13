@@ -4,6 +4,7 @@ import 'package:sfa_claim/components/custom_button.dart';
 import 'package:sfa_claim/components/custom_text.dart';
 
 import '../claim_request/claim_request_screen.dart';
+import '../controller/claim_controller.dart';
 
 class ClaimHistory extends StatefulWidget {
   const ClaimHistory({super.key});
@@ -26,6 +27,8 @@ class _ClaimHistoryState extends State<ClaimHistory> {
             ),
             CustomButton(
                 onTap: () {
+                  ClaimsController()
+                      .getDoConfirmResons(com: "ABL", context: context);
                   Navigator.push(
                     context,
                     MaterialPageRoute(
