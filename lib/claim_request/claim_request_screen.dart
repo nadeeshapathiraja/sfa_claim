@@ -1,9 +1,12 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:logger/logger.dart';
 import 'package:nb_utils/nb_utils.dart';
+import 'package:sfa_claim/blocs/claim_bloc/claim_bloc.dart';
 import 'package:sfa_claim/claim_history/claim_history.dart';
 import 'package:sfa_claim/components/custom_button.dart';
 import 'package:sfa_claim/components/custom_claim_dialog.dart';
@@ -12,6 +15,8 @@ import 'package:sfa_claim/components/custom_text_form_field.dart';
 import 'package:sfa_claim/controller/claim_controller.dart';
 
 import '../components/customIcon_button.dart';
+import '../model/objects.dart';
+import 'package:http/http.dart' as http;
 
 class ClaimRequest extends StatefulWidget {
   const ClaimRequest({super.key});
@@ -21,6 +26,7 @@ class ClaimRequest extends StatefulWidget {
 }
 
 class _ClaimRequestState extends State<ClaimRequest> {
+  final _bloc = ClaimBloc();
   final List<String> items = [
     'Fuel',
     'Highway',
@@ -45,6 +51,9 @@ class _ClaimRequestState extends State<ClaimRequest> {
   final TextEditingController _amount = TextEditingController();
   bool withBill = false;
 
+  List<String> expenseNamelist = [];
+  List<String> finalExpenseNamelist = [];
+
   @override
   void dispose() {
     textEditingController.dispose();
@@ -59,24 +68,25 @@ class _ClaimRequestState extends State<ClaimRequest> {
     );
   }
 
-  void _changeVisitNo(selectedVal) {
-    setState(
-      () {
-        selectedVisitNo = selectedVal;
-      },
-    );
-  }
+  // void _changeVisitNo(selectedVal) {
+  //   setState(
+  //     () {
+  //       selectedVisitNo = selectedVal;
+  //     },
+  //   );
+  // }
 
-  void _changeBillType(selectedVal) {
-    setState(
-      () {
-        withBill = selectedVal;
-      },
-    );
-  }
+  // void _changeBillType(selectedVal) {
+  //   setState(
+  //     () {
+  //       withBill = selectedVal;
+  //     },
+  //   );
+  // }
 
   List<XFile> imageList = [];
 
+//Select Images
   Future<void> selectImages(Function() state) async {
     final List<XFile> selectedImages = await imagePiceker.pickMultiImage();
 
@@ -86,11 +96,58 @@ class _ClaimRequestState extends State<ClaimRequest> {
     state();
   }
 
+//Get All expense types
+  Future<void> getDoConfirmResons({
+    required BuildContext context,
+    required String com,
+  }) async {
+    Map data = {
+      'com': com,
+    };
+
+    var getAllTypesAPI =
+        "http://scm-stg.abans.com:1105/api/v1/SFA/Visitclaimtype";
+
+    var response = await http.post(
+      Uri.parse(getAllTypesAPI),
+      body: data,
+    );
+
+    try {
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body).cast<String, dynamic>();
+        Logger().w(json);
+
+        if (json['Success'] == true) {
+          expenseNamelist = [];
+          finalExpenseNamelist = [];
+          List<GetExpenseTypes> claimTypes = json['Data']
+              .map<GetExpenseTypes>((json) => GetExpenseTypes.fromJson(json))
+              .toList();
+
+          for (var element in claimTypes) {
+            expenseNamelist.add(element.SAVCT_TYPE!);
+          }
+          finalExpenseNamelist = expenseNamelist;
+          Logger().d(finalExpenseNamelist.length);
+        } else {
+          return Future.error("Success Failed");
+        }
+      } else {
+        return Future.error("Status Code Error");
+      }
+    } catch (e) {
+      Logger().e(e);
+      return Future.error(e);
+    }
+  }
+
   @override
   void initState() {
     selectedVisitNo = '';
-    
+
     super.initState();
+    _bloc.add(GetClaimType(com: "ABL", context: context));
   }
 
   @override
@@ -165,6 +222,7 @@ class _ClaimRequestState extends State<ClaimRequest> {
                           text: 'ADD\n EXPENSE',
                           fontSize: 10,
                           onTap: () {
+                            getDoConfirmResons(context: context, com: "ABL");
                             // ClaimDialog().selectSerialDialog(context, items);
                             setState(() {
                               selectedExpenseType = '';
@@ -220,7 +278,12 @@ class _ClaimRequestState extends State<ClaimRequest> {
                                                             .hintColor,
                                                       ),
                                                     ),
-                                                    items: items
+                                                    value: selectedExpenseType
+                                                            .isNotEmpty
+                                                        ? selectedExpenseType
+                                                        : finalExpenseNamelist
+                                                            .first,
+                                                    items: finalExpenseNamelist
                                                         .map((item) =>
                                                             DropdownMenuItem(
                                                               value: item,
@@ -243,10 +306,6 @@ class _ClaimRequestState extends State<ClaimRequest> {
                                                       print(
                                                           selectedExpenseType);
                                                     },
-                                                    value: selectedExpenseType
-                                                            .isEmpty
-                                                        ? items.first
-                                                        : selectedExpenseType,
                                                     buttonStyleData:
                                                         const ButtonStyleData(
                                                       padding:

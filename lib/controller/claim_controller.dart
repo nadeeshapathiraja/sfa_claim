@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:http/http.dart' as http;
 
+import '../model/objects.dart';
+
 class ClaimsController {
   //Load all Pc and locations
-  Future<dynamic> getDoConfirmResons({
+  Future<List<GetExpenseTypes>> getDoConfirmResons({
     required BuildContext context,
     required String com,
   }) async {
@@ -28,16 +30,20 @@ class ClaimsController {
         Logger().w(json);
 
         if (json['Success'] == true) {
-          Logger().i("Successfully");
+          List<GetExpenseTypes> claimTypes = json['Data']
+              .map<GetExpenseTypes>((json) => GetExpenseTypes.fromJson(json))
+              .toList();
+
+          return claimTypes;
         } else {
-          Logger().e("Success Failed");
+          return Future.error("Success Failed");
         }
       } else {
-        Logger().e("Status Code Error");
+        return Future.error("Status Code Error");
       }
     } catch (e) {
       Logger().e(e);
-      return null;
+      return Future.error(e);
     }
   }
 }

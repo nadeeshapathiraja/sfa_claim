@@ -58,11 +58,13 @@ class CustomTextFormField extends StatelessWidget {
             hintText: hintText,
             isDense: true, // important line
             // contentPadding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-            prefixIcon: Icon(
-              size: 25,
-              prefixIcon,
-              color: Colors.grey,
-            ),
+            // prefixIcon: prefixIcon != null
+            //     ? Icon(
+            //         size: 25,
+            //         prefixIcon,
+            //         color: Colors.grey,
+            //       )
+            //     : const SizedBox(width: 0),
             enabledBorder: OutlineInputBorder(
               borderSide: const BorderSide(color: Colors.black, width: 1),
               borderRadius: BorderRadius.circular(20),
