@@ -1,7 +1,4 @@
-import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
-import 'package:sfa_claim/components/custom_button.dart';
-import 'package:sfa_claim/components/custom_text.dart';
 
 class ClaimDialog {
   String? selectedValue;

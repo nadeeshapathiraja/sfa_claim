@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:logger/logger.dart';
 import 'package:http/http.dart' as http;
+import 'package:logger/logger.dart';
 
 import '../model/objects.dart';
 

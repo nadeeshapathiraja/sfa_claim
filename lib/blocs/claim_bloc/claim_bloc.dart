@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -30,8 +32,31 @@ class ClaimError extends ClaimState {
 
 //Data loaded state
 class ClaimLoaded extends ClaimState {
+  List<GetExpenseTypes> expensetype = [];
+  ClaimLoaded({required this.expensetype});
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [expensetype];
+}
+
+class Claimhistory extends ClaimState {
+  String visitNumber = '';
+  String dateRange = '';
+  String vehicleType = '';
+  String fuelType = '';
+  String year = '';
+  String month = '';
+  String baseLocation = '';
+  double totalClaims = 0;
+  Claimhistory({
+    required this.visitNumber,
+    required this.dateRange,
+    required this.vehicleType,
+    required this.fuelType,
+    required this.year,
+    required this.month,
+    required this.baseLocation,
+    required this.totalClaims,
+  });
 }
 
 //--------------Bloc Event---------------//
@@ -50,15 +75,17 @@ class GetClaimType extends ClaimEvent {
 }
 
 class ClaimBloc extends Bloc<ClaimEvent, ClaimState> {
+  List<GetExpenseTypes> exptype = [];
   ClaimBloc() : super(ClaimInitial()) {
     on<ClaimEvent>((event, emit) async {
       if (event is GetClaimType) {
         emit(ClaimLoading());
-        await ClaimsController().getDoConfirmResons(
+        exptype = await ClaimsController().getDoConfirmResons(
           com: event.com,
           context: event.context,
         );
-        emit(ClaimLoading());
+
+        emit(ClaimLoaded(expensetype: exptype));
       }
     });
   }
