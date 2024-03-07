@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:nb_utils/nb_utils.dart';
 import 'package:sfa_claim/components/custom_button.dart';
 import 'package:sfa_claim/components/custom_text.dart';
 
@@ -37,8 +36,8 @@ class _ClaimHistoryState extends State<ClaimHistory> {
                 },
                 text: "text"),
             Container(
-              width: context.width(),
-              height: context.height() / 3,
+              // width: context.width(),
+              // height: context.height() / 3,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5.0),
                 color: const Color(0xffffccff),
